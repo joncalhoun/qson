@@ -74,7 +74,14 @@ func queryToMap(param string) (map[string]interface{}, error) {
 	// nothing is nested if len == 1
 	if len(pieces) == 1 {
 		var value interface{}
-		json.Unmarshal([]byte(valueStr), &value)
+		err := json.Unmarshal([]byte(valueStr), &value)
+		if err != nil {
+			// try wrapping the value in quotes
+			err = json.Unmarshal([]byte("\""+valueStr+"\""), &value)
+			if err != nil {
+				return nil, err
+			}
+		}
 		return map[string]interface{}{
 			key: value,
 		}, nil
