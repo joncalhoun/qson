@@ -1,6 +1,24 @@
 package qson
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
+
+func ExampleUnmarshal() {
+	type Ex struct {
+		A string `json:"a"`
+		B struct {
+			C int `json:"c"`
+		} `json:"b"`
+	}
+	var ex Ex
+	if err := Unmarshal(&ex, "a=xyz&b[c]=456"); err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", ex)
+	// Output: {A:xyz B:{C:456}}
+}
 
 type unmarshalT struct {
 	A string     `json:"a"`
@@ -26,6 +44,15 @@ func TestUnmarshal(t *testing.T) {
 	if expected != actual {
 		t.Errorf("Expected: %+v Actual: %+v", expected, actual)
 	}
+}
+
+func ExampleToJSON() {
+	b, err := ToJSON("a=xyz&b[c]=456")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf(string(b))
+	// Output: {"a":"xyz","b":{"c":456}}
 }
 
 func TestToJSONNested(t *testing.T) {
