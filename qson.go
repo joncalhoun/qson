@@ -50,15 +50,20 @@ func Unmarshal(dst interface{}, query string) error {
 // possible. Eg the example above would output:
 //   {"bar":{"one":{"two":2,"red":112}}}
 func ToJSON(query string) ([]byte, error) {
-	escapedQuery, err := url.QueryUnescape(query)
-	if err != nil {
-		return nil, err
+	var (
+		builder    interface{} = make(map[string]interface{})
+		queryParts []string
+	)
+	params := strings.Split(query, "&")
+	for _, part := range params {
+		qStr, err := url.QueryUnescape(part)
+		if err != nil {
+			return nil, err
+		}
+		queryParts = append(queryParts, qStr)
 	}
-
-	var builder interface{} = make(map[string]interface{})
-	params := strings.Split(escapedQuery, "&")
-	for _, str := range params {
-		tempMap, err := queryToMap(str)
+	for _, part := range queryParts {
+		tempMap, err := queryToMap(part)
 		if err != nil {
 			return nil, err
 		}
