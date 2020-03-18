@@ -25,7 +25,8 @@ type unmarshalT struct {
 	B unmarshalB `json:"b"`
 }
 type unmarshalB struct {
-	C int `json:"c"`
+	C int    `json:"c"`
+	D string `json:"D"`
 }
 
 func TestUnmarshal(t *testing.T) {
@@ -132,5 +133,23 @@ func TestSplitKeyAndValue(t *testing.T) {
 	}
 	if eValue != aValue {
 		t.Errorf("Values do not match. Expected: %s Actual: %s", eValue, aValue)
+	}
+}
+
+func TestEncodedAmpersand(t *testing.T) {
+	query := "a=xyz&b[d]=ben%26jerry"
+	expected := unmarshalT{
+		A: "xyz",
+		B: unmarshalB{
+			D: "ben&jerry",
+		},
+	}
+	var actual unmarshalT
+	err := Unmarshal(&actual, query)
+	if err != nil {
+		t.Error(err)
+	}
+	if expected != actual {
+		t.Errorf("Expected: %+v Actual: %+v", expected, actual)
 	}
 }
