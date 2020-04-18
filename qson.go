@@ -51,18 +51,10 @@ func Unmarshal(dst interface{}, query string) error {
 //   {"bar":{"one":{"two":2,"red":112}}}
 func ToJSON(query string) ([]byte, error) {
 	var (
-		builder    interface{} = make(map[string]interface{})
-		queryParts []string
+		builder interface{} = make(map[string]interface{})
 	)
 	params := strings.Split(query, "&")
 	for _, part := range params {
-		qStr, err := url.QueryUnescape(part)
-		if err != nil {
-			return nil, err
-		}
-		queryParts = append(queryParts, qStr)
-	}
-	for _, part := range queryParts {
 		tempMap, err := queryToMap(part)
 		if err != nil {
 			return nil, err
@@ -85,6 +77,15 @@ func queryToMap(param string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	rawValue, err = url.QueryUnescape(rawValue)
+	if err != nil {
+		return nil, err
+	}
+	rawKey, err = url.QueryUnescape(rawKey)
+	if err != nil {
+		return nil, err
+	}
+
 	pieces := bracketSplitter.Split(rawKey, -1)
 	key := pieces[0]
 

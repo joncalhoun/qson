@@ -153,3 +153,18 @@ func TestEncodedAmpersand(t *testing.T) {
 		t.Errorf("Expected: %+v Actual: %+v", expected, actual)
 	}
 }
+
+func TestEncodedAmpersand2(t *testing.T) {
+	query := "filter=parent%3Dflow12345%26request%3Dreq12345&meta.limit=20&meta.offset=0"
+	expected := map[string]interface{}{"filter": "parent=flow12345&request=req12345", "meta.limit": float64(20), "meta.offset": float64(0)}
+	actual := make(map[string]interface{})
+	err := Unmarshal(&actual, query)
+	if err != nil {
+		t.Error(err)
+	}
+	for k, v := range actual {
+		if nv, ok := expected[k]; !ok || nv != v {
+			t.Errorf("Expected: %+v Actual: %+v", expected, actual)
+		}
+	}
+}
