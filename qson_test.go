@@ -25,7 +25,8 @@ type unmarshalT struct {
 	B unmarshalB `json:"b"`
 }
 type unmarshalB struct {
-	C int `json:"c"`
+	C int    `json:"c"`
+	D string `json:"D"`
 }
 
 func TestUnmarshal(t *testing.T) {
@@ -132,5 +133,38 @@ func TestSplitKeyAndValue(t *testing.T) {
 	}
 	if eValue != aValue {
 		t.Errorf("Values do not match. Expected: %s Actual: %s", eValue, aValue)
+	}
+}
+
+func TestEncodedAmpersand(t *testing.T) {
+	query := "a=xyz&b[d]=ben%26jerry"
+	expected := unmarshalT{
+		A: "xyz",
+		B: unmarshalB{
+			D: "ben&jerry",
+		},
+	}
+	var actual unmarshalT
+	err := Unmarshal(&actual, query)
+	if err != nil {
+		t.Error(err)
+	}
+	if expected != actual {
+		t.Errorf("Expected: %+v Actual: %+v", expected, actual)
+	}
+}
+
+func TestEncodedAmpersand2(t *testing.T) {
+	query := "filter=parent%3Dflow12345%26request%3Dreq12345&meta.limit=20&meta.offset=0"
+	expected := map[string]interface{}{"filter": "parent=flow12345&request=req12345", "meta.limit": float64(20), "meta.offset": float64(0)}
+	actual := make(map[string]interface{})
+	err := Unmarshal(&actual, query)
+	if err != nil {
+		t.Error(err)
+	}
+	for k, v := range actual {
+		if nv, ok := expected[k]; !ok || nv != v {
+			t.Errorf("Expected: %+v Actual: %+v", expected, actual)
+		}
 	}
 }
