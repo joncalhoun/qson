@@ -1,5 +1,7 @@
 # qson
 
+***WARNING** This isn't actively maintained, but it should work as a proof of concept for anyone who is interested in seeing how you might write a library like this for your own projects.*
+
 Convert URL query strings into JSON so that you can more easily parse them into structs/maps in Go.
 
 I wrote this to help someone in the Gopher Slack, so it isn't really 100% complete but it should be stable enough to use in most production environments and work well as a starting point if you need something more custom.
